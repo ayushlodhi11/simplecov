@@ -74,12 +74,12 @@ module SimpleCov
     # Returns the result for the current coverage run, merging it across test suites
     # from cache using SimpleCov::ResultMerger if use_merging is activated (default)
     #
-    def result
-      return @result if result?
+    def result stop: false, clear: true, cache_result: false
+      return @result if result? and cache_result
 
       # Collect our coverage result
       if running
-        @result = SimpleCov::Result.new add_not_loaded_files(Coverage.result)
+        @result = SimpleCov::Result.new add_not_loaded_files(Coverage.result(stop: stop, clear: clear))
       end
 
       # If we're using merging of results, store the current result
@@ -92,7 +92,7 @@ module SimpleCov
 
       @result
     ensure
-      self.running = false
+      self.running = false if stop
     end
 
     #
